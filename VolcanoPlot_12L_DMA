@@ -34,4 +34,4 @@ p <- p + labs(
 
 p <- p + theme_minimal(base_size = 14)
 
-ggsave("volcano_myDiff12_final.png", plot  = p, width = 9, height = 7, dpi = 300, bg = "white")
+ggsave("volcano_myDiff12_nice.png", plot  = p, width = 9, height = 7, dpi = 300, bg = "white")
