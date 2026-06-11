@@ -48,7 +48,6 @@ p <- p + theme_minimal(base_size = 14) +
     legend.background = element_rect(fill   = "white", colour = "black"),
     plot.background   = element_rect(fill = "white", colour = NA),
     panel.background  = element_rect(fill = "white", colour = NA),
-    legend.background = element_rect(fill = "white", colour = NA)
 )
 
 ggsave("volcano_myDiff12_nice.png", plot  = p, width = 9, height = 7, dpi = 300, bg = "white")
