@@ -1,8 +1,16 @@
+
+#Loading Packages:
+
 library(methylKit)
 library(ggplot2)
 
+#Loading DMA results table:
+
 myDiff_12 <- readRDS("myDiff_min12_alive_dead.rds")
 df12 <- getData(myDiff_12)
+
+
+#Plotting the Volcano Plot 
 
 p <- ggplot(
   df12,
@@ -31,6 +39,8 @@ p <- p + labs(
   x     = "Methylation Difference (%)",
   y     = expression(-log[10](q-value))
 )
+
+#Original code produced a transparent background (hard readability) so had to explicitely state I wanted a white background 
 
 p <- p + theme_minimal(base_size = 14) +
   theme(
