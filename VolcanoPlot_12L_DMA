@@ -23,7 +23,7 @@ p <- p + scale_colour_manual(
     "Hypermethylated" = "red",
     "Hypomethylated"  = "blue"
   ),
-  name = "Direction"
+  name = "Legend"
 )
 
 p <- p + labs(
@@ -32,6 +32,12 @@ p <- p + labs(
   y     = expression(-log[10](q-value))
 )
 
-p <- p + theme_minimal(base_size = 14)
+p <- p + theme_minimal(base_size = 14) +
+  theme(
+    legend.position   = "top",
+    plot.background   = element_rect(fill = "white", colour = NA),
+    panel.background  = element_rect(fill = "white", colour = NA),
+    legend.background = element_rect(fill = "white", colour = NA)
+)
 
 ggsave("volcano_myDiff12_nice.png", plot  = p, width = 9, height = 7, dpi = 300, bg = "white")
