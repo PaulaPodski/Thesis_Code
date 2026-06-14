@@ -1,0 +1,74 @@
+# Loading relevant packages
+install.packages("glmnet")
+install.packages("pROC")
+library(glmnet)
+library(pROC)
+
+# Loading the data
+X_scaled <- readRDS("ML_X_top100_beta.rds")
+y        <- readRDS("ML_y_dead_alive.rds")
+
+# Fitting cv.glmnet models for each alpha hyperparameter
+models <- list()
+
+for (i in 0:20) {
+  a <- i / 20
+  name <- paste0("alpha", a)
+  
+  models[[name]] <- cv.glmnet(
+    x = X_scaled,
+    y = y,
+    family = "binomial", # Because of binomial outcome - Alive VS Dead
+    alpha = a,
+    type.measure = "deviance"  
+  )
+}
+
+# lambda.min, AUC, CpGs for each alpha
+
+results_alpha <- data.frame()
+
+for (i in 0:20) {
+  a <- i / 20
+  name <- paste0("alpha", a)
+  
+  fit <- models[[name]]
+  
+  lambda_best <- fit$lambda.min
+  
+  # Initial predictions on all samples at lambda.min
+  p_all <- as.numeric(
+    predict(fit, s = lambda_best, newx = X_scaled, type = "response")
+  )
+  
+  # AUC:
+  
+auc_all <- as.numeric(
+    auc(roc(response = y, predictor = p_all))
+  )
+  
+  # deviance at lambda.min (mean cross-validated deviance)
+  
+  idx <- which(fit$lambda == lambda_best)
+  dev_min <- fit$cvm[idx]
+  
+  # number of non-zero CpGs (excluding intercept)
+ 
+coefs <- as.matrix(coef(fit, s = lambda_best))
+  n_cpg <- sum(coefs[-1, 1] != 0)
+  
+  temp <- data.frame(
+    alpha      = a,
+    lambda_min = lambda_best,
+    deviance   = dev_min,
+    AUC_all    = auc_all,
+    n_CpG      = n_cpg,
+    name       = name
+  )
+  results_alpha <- rbind(results_alpha, temp)
+}
+
+results_alpha
+write.csv(results_alpha,
+          "elastic_net_alpha_scan_lambda_min_summary.csv",
+          row.names = FALSE)
