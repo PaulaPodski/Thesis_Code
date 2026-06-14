@@ -1,0 +1,75 @@
+#Installing relevant packages
+
+install.packages("glmnet")
+install.packages("rsample")
+install.packages("pROC")
+
+
+# Loading the data
+
+X_scaled <- readRDS("ML_X_top100_beta.rds")
+y <- readRDS("ML_y_dead_alive.rds")
+
+# Creating a data frame
+
+sample_ids <- rownames(X_scaled)
+
+data_for_split <- data.frame(id = sample_ids, y  = y)
+
+# Perform train/test split 
+
+set.seed(42)
+
+split_80_20 <- initial_split(data_for_split, prop = 0.8, strata = y)
+
+train_data <- training(split_80_20)
+test_data  <- testing(split_80_20)
+
+train_idx <- match(train_data$id, sample_ids)
+test_idx  <- match(test_data$id, sample_ids)
+
+X_train <- X_scaled[train_idx, ]
+y_train <- y[train_idx]
+X_test  <- X_scaled[test_idx, ]
+y_test  <- y[test_idx]
+
+dim(X_train)
+dim(X_test)
+
+# Fitting the elastic net with alpha = 0.5 then I repeat for other alpha values for alpha_value so for example (if not done - 0.25 and 0.8)
+
+alpha_value <- 0.5 
+
+fit_elastic <- cv.glmnet(
+  x = X_train,
+  y = y_train,
+  family = "binomial",
+  alpha = alpha_value,
+  type.measure = "deviance"
+)
+
+lambda_best <- fit_elastic$lambda.min
+
+# TRAIN AUC
+pred_train <- as.numeric(
+  predict(fit_elastic, s = lambda_best, newx = X_train, type = "response")
+)
+auc_train <- as.numeric(
+  auc(roc(response = y_train, predictor = pred_train))
+)
+
+# Test the AUC
+pred_test <- as.numeric(
+  predict(fit_elastic, s = lambda_best, newx = X_test, type = "response")
+)
+auc_test <- as.numeric(
+  auc(roc(response = y_test, predictor = pred_test))
+)
+
+#I gave explicit messages so I know which output is being shown
+
+cat("Internal validation (80/20 split)\n")
+cat("alpha:", alpha_value, "\n")
+cat("lambda.min:", lambda_best, "\n")
+cat("Train AUC:", round(auc_train, 3), "\n")
+cat("Test  AUC:", round(auc_test, 3), "\n")
