@@ -4,6 +4,9 @@ install.packages("glmnet")
 install.packages("rsample")
 install.packages("pROC")
 
+library(glmnet)
+library(rsample) 
+library(pROC)
 
 #Loading data
 
