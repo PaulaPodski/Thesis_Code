@@ -1,33 +1,27 @@
-#Installing ggplot package
-
-library(ggplot2)
-
-# create a label column for the legend
-
-results_alpha$CpGs_label <- paste("CpGs kept:", results_alpha$n_CpG)
-
-ggplot(results_alpha, aes(x = alpha, y = AUC_all)) +
+p_alpha <- ggplot(results_alpha, aes(x = alpha, y = AUC_all)) +
   geom_line(linewidth = 0.5) +
   geom_point(size = 2) +
-  # text labels next to each point
-  geom_text(
-    aes(label = n_CpG),
-    vjust = -0.7,
-    size = 3
-  ) +
   scale_x_continuous(breaks = seq(0, 1, by = 0.05)) +
   labs(
     x = "alpha value",
     y = "AUC (lambda.min)",
-    title = "Elastic Net Model alpha scan (lambda_min)",
-    caption = "Numbers on points = No. CpGs kept by the elastic net model"
+    title = "Elastic Net Model alpha scan (lambda_min)"
   ) +
   theme_minimal() +
   theme(
     plot.margin = margin(t = 25, r = 10, b = 10, l = 10),
     axis.text.x = element_text(angle = 45, hjust = 1),
-    # draw axis lines
     panel.border = element_blank(),
     axis.line.x = element_line(colour = "black"),
     axis.line.y = element_line(colour = "black")
   )
+
+# save to PNG
+ggsave(
+  filename = "alpha_scan_lambda_min_AUC_no_labels.png",
+  plot     = p_alpha,
+  width    = 9,
+  height   = 7,
+  dpi      = 300,
+  bg       = "white"
+)
