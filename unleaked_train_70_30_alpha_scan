@@ -1,0 +1,49 @@
+library(glmnet)
+library(pROC)
+
+run_alpha_scan <- function(X_scaled, y, label) {
+  models <- list()
+  for (i in 0:20) {
+    a <- i / 20
+    name <- paste0("alpha", a)
+    models[[name]] <- cv.glmnet(
+      x = X_scaled, y = y, family = "binomial", alpha = a, type.measure = "deviance"
+    )
+  }
+  
+  results_alpha <- data.frame()
+  for (i in 0:20) {
+    a <- i / 20
+    name <- paste0("alpha", a)
+    fit <- models[[name]]
+    lambda_best <- fit$lambda.min
+    
+    p_all <- as.numeric(predict(fit, s = lambda_best, newx = X_scaled, type = "response"))
+    auc_all <- as.numeric(auc(roc(response = y, predictor = p_all)))
+    
+    idx <- which(fit$lambda == lambda_best)
+    dev_min <- fit$cvm[idx]
+    
+    coefs <- as.matrix(coef(fit, s = lambda_best))
+    n_cpg <- sum(coefs[-1, 1] != 0)
+    
+    temp <- data.frame(
+      alpha = a, lambda_min = lambda_best, deviance = dev_min,
+      AUC_all = auc_all, n_CpG = n_cpg, name = name
+    )
+    results_alpha <- rbind(results_alpha, temp)
+  }
+  
+  write.csv(results_alpha, paste0("elastic_net_alpha_scan_lambda_min_summary_", label, ".csv"), row.names = FALSE)
+  results_alpha
+}
+
+X_train_mean <- readRDS("X_train_70_30_mean_imputed.rds")
+X_train_knn  <- readRDS("X_train_70_30_knn_imputed.rds")
+y_train      <- readRDS("y_train_70_30.rds")
+
+results_70_30_mean <- run_alpha_scan(X_train_mean, y_train, "70_30_mean")
+results_70_30_knn  <- run_alpha_scan(X_train_knn, y_train, "70_30_knn")
+
+results_70_30_mean
+results_70_30_knn
