@@ -1,0 +1,49 @@
+# The following pipeline desrcibes loading DMA results from train 70/30 split from min.per.group=12L and plotting results via Volcano Plot
+
+#This code was executed interactively on Apocrita using the following command: salloc --job-name=data_analysis       --cpus-per-task=4        --mem=64G        --time=06:00:00
+
+#This was also ran in within an environment built before launching R - please make sure you execute this before any data loading/analysis:
+
+# source /gpfs/scratch/hfy327/miniforge3/etc/profile.d/conda.sh
+# conda activate methylation_env
+
+library(methylKit)
+library(ggplot2)
+
+#Loading the DMA object
+
+myDiff_train <- getData(readRDS("myDiff_train_70_30_min12.rds"))
+
+#Calculating the significance thresholds for DMPs +/- 25% difference and significance
+
+myDiff_train$sig <- "Not significant"
+myDiff_train$sig[myDiff_train$qvalue < 0.01 & myDiff_train$meth.diff > 25]  <- "Hypermethylated"
+myDiff_train$sig[myDiff_train$qvalue < 0.01 & myDiff_train$meth.diff < -25] <- "Hypomethylated"
+
+#Verifying and classifying DMPs into their respective groups and showing a summary table for each:
+
+sig_table <- as.data.frame(table(myDiff_train$sig))
+colnames(sig_table) <- c("Methylation Status", "Count")
+print(sig_table)
+
+
+#Plotting the volcano plot of the DMA:
+
+volcano_plot <- ggplot(myDiff_train, aes(x = meth.diff, y = -log10(qvalue), color = sig)) +
+  geom_point(alpha = 0.4, size = 1) +
+  scale_colour_manual(values = c(
+    "Hypermethylated" = "red",
+    "Hypomethylated" = "blue",
+    "Not significant" = "grey70"
+  )) +
+  geom_vline(xintercept = c(-25, 25), linetype = "solid", colour = "black") +
+  geom_hline(yintercept = -log10(0.01), linetype = "solid", colour = "black") +
+  labs(
+    x = "Methylation difference (%)",
+    y = "-log10(q-value)",
+    title = "70/30 Train DMA",
+    colour = "Threshold"
+  ) +
+  theme_minimal()
+
+ggsave("volcano_plot_70_30_train.png", plot = volcano_plot, width = 8, height = 6, dpi = 300, bg = "white")
