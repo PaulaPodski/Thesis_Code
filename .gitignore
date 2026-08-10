@@ -1,0 +1,16 @@
+# Raw sequencing data - never commit
+*.cov.gz
+*.bam
+*.fastq.gz
+
+# Large R data objects - too big / not appropriate for version control
+*.rds
+
+# SLURM output logs
+*.o[0-9]*
+*.e[0-9]*
+
+# R session files
+.Rhistory
+.RData
+Rplots.pdf
