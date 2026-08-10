@@ -14,3 +14,22 @@
 # Elastic net regression, alpha tuned per split/imputation method via CV deviance
 # Manual prediction via matrix multiplication (no refitting on test data)
 # Model evaluation (AUC, confusion matrices, ROC) and SHAP-based feature interpretation
+
+## Environment Setup
+
+This pipeline was run on QMUL's Apocrita HPC cluster. To reproduce the environment:
+
+```bash
+module load miniforge/25.3.0
+conda env create -f environment.yml
+conda activate methylation_env_clean
+```
+
+If you already have a conda/miniforge installation and just want to activate an existing, matching environment:
+
+```bash
+source /path/to/your/miniforge3/etc/profile.d/conda.sh
+conda activate methylation_env_clean
+```
+
+All scripts require this environment to be active before running any scripts.
