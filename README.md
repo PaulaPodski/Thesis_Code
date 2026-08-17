@@ -32,4 +32,18 @@ source /path/to/your/miniforge3/etc/profile.d/conda.sh
 conda activate methylation_env_clean
 ```
 
+The following list contains the main R packages for analysis used in the thesis:
+
+```bash
+# - methylKit
+# - impute
+# - caret
+# - glmnet
+# - ggplot2
+# - iml
+# -pROC
+
+```
+The full Conda environment, package versions and dependencies are provided in the 'environment.yml'
+
 All scripts require this environment to be active before running any scripts.
