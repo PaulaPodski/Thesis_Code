@@ -1,5 +1,9 @@
 #!/usr/bin/env Rscript
+
 library(methylKit)
+
+#Listing the patient samples and their respective coverage files:
+
 
 sample.ids <- c("T108","T117","T120","T123","T135","T140","T142","T148",
                  "T171","T176","T191","T19","T207","T20","T211","T214",
@@ -36,6 +40,8 @@ file.list <- list("T108_S18c_bismark.cov.gz", "T117_S2_bismark.cov.gz", "T120_S5
   "T784_S23_bismark.cov.gz", "T786_S6b_bismark.cov.gz", "T797_S14c_bismark.cov.gz",
   "T799_S12c_bismark.cov.gz", "T83_S4c_bismark.cov.gz", "T8_S17b_bismark.cov.gz")
 
+#Giving treatment groups: 1 for cases (dead) and 0 for controls (alive):
+
 treatment <- c(1,0,1,1,0,0,1,0,1,0,0,1,0,1,0,0,0,0,0,1,1,0,1,1,0,0,0,1,0,0,
                1,1,0,0,0,1,1,0,0,1,1,1,1,1,0,0,0,0,1,1,0,0,1,0,1,1,1,1,1,1,
                0,0,1,0,0,1,0,0,1,1,1,1)
@@ -47,9 +53,7 @@ names(file.list) <- sample.ids
 
 stopifnot(length(sample.ids) == 72, length(treatment) == 72, length(file.list) == 72)
 table(treatment)
-#treatment
-#0  1
-#36 36
+
 set.seed(42)
 case_ids    <- sample.ids[treatment == 1]   # 36 dead
 control_ids <- sample.ids[treatment == 0]
@@ -70,35 +74,24 @@ saveRDS(list(train_ids = train_ids, test_ids = test_ids,
         "sample_split_80_20_min12.rds")
 split <- readRDS("sample_split_80_20_min12.rds")
 
-#See what's inside
+# Seeing what's inside and verifying
 str(split)
-#List of 5
- #$ train_ids      : chr [1:50] "T108" "T710" "T303" "T576" ...
- #$ test_ids       : chr [1:22] "T19" "T24" "T313" "T419" ...
- #$ train_treatment: num [1:50] 1 1 1 1 1 1 1 1 1 1 ...
- #$ test_treatment : num [1:22] 1 1 1 1 1 1 1 1 1 1 ...
- #$ seed           : num 42
+
 length(split$train_ids)   
 length(split$test_ids)    
-#[1] 58
-#[1] 14
+
 table(split$train_treatment)   
 table(split$test_treatment)    
 
-# 0  1
-#29 29
+#Confirming of no duplicate samples within each group and more verifications before continuing DMA and downstream analysis:
 
- #0  1
-#7 7
 intersect(split$train_ids, split$test_ids)
 character(0)
 all_ids <- c(split$train_ids, split$test_ids)
 length(all_ids) == 72                         
 length(unique(all_ids)) == 72                 
 setdiff(sample.ids, all_ids)
-#[1] TRUE
-#[1] TRUE #this confirms there are no dupicate samples in each group
-# character(0)
+
 identical(
   split$train_treatment,
   treatment[match(split$train_ids, sample.ids)]
@@ -107,8 +100,7 @@ identical(
   split$test_treatment,
   treatment[match(split$test_ids, sample.ids)]
 )  
-#[1] TRUE
-#[1] TRUE
+
 set.seed(split$seed)
 case_ids_check    <- sample.ids[treatment == 1]
 control_ids_check <- sample.ids[treatment == 0]
@@ -117,8 +109,7 @@ train_controls_check <- sample(control_ids_check, 29)
 
 identical(sort(train_cases_check), sort(split$train_ids[split$train_treatment == 1]))
 identical(sort(train_controls_check), sort(split$train_ids[split$train_treatment == 0]))
-#[1] TRUE
-#[1] TRUE
+
 train_file.list <- unname(as.list(file.list[train_ids]))
 test_file.list  <- unname(as.list(file.list[test_ids]))
 
@@ -130,18 +121,16 @@ train_file.list <- readRDS("train_file_list_80_20_min12.rds")
 train_ids       <- split$train_ids
 train_treatment <- split$train_treatment
 
-# Checking if data is split correctly into groups and cases/controls: 
+#Checking if the  data is split correctly into correct groups (cases/controls): 
 stopifnot(length(train_file.list) == length(train_ids),
           length(train_ids) == 58,
           sum(train_treatment) == 29, sum(train_treatment == 0) == 29)
+
 length(train_file.list)      
 length(train_ids)            
 sum(train_treatment)         
 sum(train_treatment == 0)    
-#[1] 58
-#[1] 58
-#[1] 29
-#[1] 29
+
 myobj_train <- methRead(
   train_file.list,
   sample.id = as.list(train_ids),
