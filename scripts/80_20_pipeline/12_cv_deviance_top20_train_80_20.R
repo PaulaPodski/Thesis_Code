@@ -12,7 +12,7 @@ y_train_80_20_factor   <- factor(y_train_80_20, levels = c(0, 1))
 
 default_fold <- 10
 set.seed(42)
-fold_assigned <- sample(rep(1:default_fold, length.out = length(y_train_80_20_factor))
+fold_assigned <- sample(rep(1:default_fold, length.out = length(y_train_80_20_factor)))
 
 # Fitting the  final models at chosen alphas (0.2 and 0.8)
 
