@@ -53,3 +53,16 @@ results_knn_20 <- data.frame(alpha = alpha_table, AUC = auc_knn_20, no_CpGs_reta
 print(results_knn_20)
 
 saveRDS(results_knn_20, "alpha_scan_70_30_knn_top20_fixed_folds.rds")
+
+png("alpha_scan_70_30_knn_top20_AUC.png", width = 1800, height = 1400, res = 300)
+plot(results_knn_20$alpha, results_knn_20$AUC, type = "b", pch = 19, col = "blue",
+     xlab = "alpha value", ylab = "AUC (lambda.min)",
+     main = "Elastic Net Alpha Scan, 70/30 Train Top 20 (KNN Imputed)")
+dev.off()
+
+png("alpha_scan_70_30_knn_top20_AUC.png", width = 1800, height = 1400, res = 300)
+plot(results_knn_20$alpha, results_knn_20$AUC, type = "b", pch = 19, col = "black",
+     xlab = "alpha value", ylab = "AUC (lambda.min)",
+     main = "Elastic Net Alpha Scan, 70/30 Train Top 20 (KNN Imputed)",
+     cex.main = 0.8)
+dev.off()

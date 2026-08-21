@@ -68,3 +68,18 @@ ggsave("feature_importance_70_30_knn_FeatureImp.png", plot = p_imp_70_30_knn, wi
 
 
 
+
+#Combined SHAP summary plot across all test patients
+
+shap_results_all_70_30_knn <- readRDS("shap_results_all_patients_70_30_knn_iml.rds")
+
+p_summary_70_30_knn <- ggplot(shap_results_all_70_30_knn, aes(x = feature, y = phi)) +
+  geom_jitter(width = 0.15, alpha = 0.6, color = "steelblue") +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "grey50") +
+  coord_flip() +
+  labs(title = "SHAP Values Across All Test Patients (70/30 KNN)",
+       x = NULL, y = "Phi (SHAP contribution)") +
+  theme_minimal() +
+  theme(plot.title = element_text(hjust = 0.5, face = "bold"))
+
+ggsave("shap_summary_all_patients_70_30_knn.png", plot = p_summary_70_30_knn, width = 7, height = 6, dpi = 300, bg = "white")

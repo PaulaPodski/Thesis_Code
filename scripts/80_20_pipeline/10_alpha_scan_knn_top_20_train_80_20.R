@@ -61,3 +61,16 @@ plot(results_knn_20$alpha, results_knn_20$AUC, type = "b", pch = 19, col = "blue
 abline(h = 0.5, lty = 2, col = "grey")
 
 dev.off()
+
+png("alpha_scan_80_20_knn_top20_AUC.png", width = 1800, height = 1400, res = 300)
+plot(results_knn_20$alpha, results_knn_20$AUC, type = "b", pch = 19, col = "blue",
+     xlab = "alpha value", ylab = "AUC (lambda.min)",
+     main = "Elastic Net Alpha Scan, 80/20 Train Top 20 (KNN Imputed)")
+dev.off()
+
+png("alpha_scan_80_20_knn_top20_AUC.png", width = 1800, height = 1400, res = 300)
+plot(results_knn_20$alpha, results_knn_20$AUC, type = "b", pch = 19, col = "black",
+     xlab = "alpha value", ylab = "AUC (lambda.min)",
+     main = "Elastic Net Alpha Scan, 80/20 Train Top 20 (KNN Imputed)",
+     cex.main = 0.8)
+dev.off()

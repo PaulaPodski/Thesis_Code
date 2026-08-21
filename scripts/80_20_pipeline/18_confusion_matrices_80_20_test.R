@@ -46,7 +46,7 @@ ggplot(data = cm_knn_df, aes(x = Reference, y = Prediction, fill = Freq)) +
   geom_text(aes(label = paste0(Freq, "\n", Label)), color = "black", size = 5) +
   scale_fill_gradient(low = "white", high = "lightblue") +
   theme_minimal() +
-  labs(title = "Confusion Matrix KNN (k = 10), cutoff = 0.5", x = "Reference", y = "Prediction")
+  labs(title = "80/20 Test Split, KNN Imputation, cutoff = 0.5", x = "Reference", y = "Prediction")
 
 ggsave("confusion_matrix_80_20_knn_cutoff05.png", width = 5, height = 5, dpi = 300, bg = "white")
 
@@ -63,6 +63,6 @@ ggplot(data = cm_mean_df, aes(x = Reference, y = Prediction, fill = Freq)) +
   geom_text(aes(label = paste0(Freq, "\n", Label)), color = "black", size = 5) +
   scale_fill_gradient(low = "white", high = "lightblue") +
   theme_minimal() +
-  labs(title = "Confusion Matrix Mean, cutoff = 0.5", x = "Reference", y = "Prediction")
+  labs(title = "80/20 Test Split, Mean Imputation, cutoff = 0.5", x = "Reference", y = "Prediction")
 
 ggsave("confusion_matrix_80_20_mean_cutoff05.png", width = 5, height = 5, dpi = 300, bg = "white")
