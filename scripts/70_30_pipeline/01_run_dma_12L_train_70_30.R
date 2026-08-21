@@ -68,6 +68,18 @@ saveRDS(test_file.list, "test_file_list_70_30_min12.rds")
 
 #Now using methylKit - for filterByCoverage, normalize and unite and calculate DiffMeth (for Differential Methylation Analysis ONLY ON TRAIN DATA!)
 
+myobj_train <- methRead(
+  train_file.list,
+  sample.id = as.list(train_ids),
+  assembly = "hg38",
+  treatment = train_treatment,
+  context = "CpG",
+  pipeline = "bismarkCoverage",
+  mincov = 10,
+  dbtype = "tabix",
+  dbdir = "methylDB_train_70_30_min12"
+)
+
 filtered_train   <- filterByCoverage(myobj_train, lo.count = 10, lo.perc = NULL,
                                       hi.count = NULL, hi.perc = 99.9)
 normalized_train <- normalizeCoverage(filtered_train)
