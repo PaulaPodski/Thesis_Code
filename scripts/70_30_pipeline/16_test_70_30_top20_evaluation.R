@@ -90,3 +90,26 @@ saveRDS(list(pred_prob = pred_prob_knn_20_70_30, roc = roc_knn_20_70_30, auc = a
 
 saveRDS(list(pred_prob = pred_prob_mean_20_70_30, roc = roc_mean_20_70_30, auc = auc(roc_mean_20_70_30), deviance = dev_mean_70_30, y_test = y_test_70_30_aligned), "test_results_70_30_mean_top20_final.rds")
 
+
+#Boxplot of predicted probability by outcome (KNN)
+
+library(ggplot2)
+
+plot_df_knn_70_30 <- data.frame(
+  Outcome = factor(y_test_70_30_aligned, levels = c(0, 1), labels = c("Alive", "PCa-specific death")),
+  Predicted_probability = as.numeric(pred_prob_knn_20_70_30)
+)
+
+p_box_knn_70_30 <- ggplot(plot_df_knn_70_30, aes(x = Outcome, y = Predicted_probability, fill = Outcome)) +
+  geom_boxplot(outlier.shape = NA, alpha = 0.6, colour = "black") +
+  geom_jitter(width = 0.08, height = 0, size = 2, alpha = 0.75, colour = "black") +
+  geom_hline(yintercept = 0.5, linetype = "dashed", colour = "grey35") +
+  scale_fill_manual(values = c("Alive" = "#4DAF4A", "PCa-specific death" = "#E41A1C")) +
+  coord_cartesian(ylim = c(0, 1)) +
+  labs(x = NULL, y = "Predicted probability of PCa-specific death",
+       title = "70/30 Test Split, KNN Imputation: Predicted Probability by Outcome") +
+  theme_classic(base_size = 13) +
+  theme(legend.position = "none",
+        plot.title = element_text(size = 11, hjust = 0.5))
+
+ggsave("boxplot_predicted_probability_70_30_knn.png", plot = p_box_knn_70_30, width = 7, height = 6, dpi = 300, bg = "white")
