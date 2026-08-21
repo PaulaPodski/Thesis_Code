@@ -63,7 +63,7 @@ print(results_knn_100)
 
 png("alpha_vs_apparent_AUC_knn_top100.png", width = 1800, height = 1400, res = 300)
 
-plot(results_mean_100$alpha, results_mean_100$AUC, type = "b", pch = 19, col = "blue", xlab = "Alpha (0 = Ridge, 1 = Lasso)", ylab = "Apparent train AUC at lambda.min", main = "80/20 Mean Top 100: Alpha vs AUC", ylim = c(0.5, 1.02))
+plot(results_knn_100$alpha, results_knn_100$AUC, type = "b", pch = 19, col = "blue", xlab = "Alpha (0 = Ridge, 1 = Lasso)", ylab = "Apparent train AUC at lambda.min", main = "80/20 KNN Top 100: Alpha vs AUC", ylim = c(0.5, 1.02))
 
 abline(h = 0.5, lty = 2, col = "grey")
 
